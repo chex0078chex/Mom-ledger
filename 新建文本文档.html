@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0, user-scalable=yes">
+    <title>妈妈记账本 · 分类版</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: #f5f5f5;
+            padding: 16px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            width: 100%;
+            background: white;
+            border-radius: 28px;
+            padding: 24px 20px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+        h1 {
+            font-size: 36px;
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        .balance-box {
+            background: #2c3e50;
+            color: white;
+            border-radius: 24px;
+            padding: 28px 20px;
+            margin: 20px 0 30px;
+            text-align: center;
+        }
+        .balance-label {
+            font-size: 22px;
+            opacity: 0.9;
+            margin-bottom: 8px;
+        }
+        .balance-amount {
+            font-size: 64px;
+            font-weight: 600;
+            line-height: 1.2;
+            word-break: break-word;
+        }
+        .input-group {
+            margin-bottom: 28px;
+        }
+        label {
+            font-size: 24px;
+            display: block;
+            margin-bottom: 10px;
+            color: #34495e;
+            font-weight: 500;
+        }
+        input, textarea, select {
+            width: 100%;
+            padding: 18px 16px;
+            font-size: 24px;
+            border: 2px solid #b0bec5;
+            border-radius: 20px;
+            outline: none;
+            transition: 0.2s;
+            background: #fefefe;
+            font-family: inherit;
+        }
+        select {
+            appearance: none;
+            background: #fff url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%23333" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>') no-repeat right 16px center;
+            background-size: 24px;
+            padding-right: 50px;
+        }
+        input:focus, textarea:focus, select:focus {
+            border-color: #3498db;
+            background: #fff;
+        }
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        .button-row {
+            display: flex;
+            gap: 16px;
+            margin: 16px 0 32px;
+        }
+        .btn {
+            flex: 1;
+            padding: 22px 12px;
+            font-size: 32px;
+            font-weight: 600;
+            border: none;
+            border-radius: 50px;
+            background: #ecf0f1;
+            color: #2c3e50;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: 0.1s ease;
+            cursor: pointer;
+            touch-action: manipulation;
+        }
+        .btn.income {
+            background: #27ae60;
+            color: white;
+        }
+        .btn.expense {
+            background: #e67e22;
+            color: white;
+        }
+        .btn:active {
+            transform: scale(0.97);
+            opacity: 0.9;
+        }
+        .history-title {
+            font-size: 28px;
+            margin: 20px 0 16px;
+            color: #2c3e50;
+            border-left: 10px solid #3498db;
+            padding-left: 16px;
+        }
+        .record-list {
+            list-style: none;
+            max-height: 400px;
+            overflow-y: auto;
+            border-top: 2px solid #ecf0f1;
+            padding-top: 10px;
+        }
+        .record-item {
+            background: #f8f9fa;
+            border-radius: 24px;
+            padding: 18px 20px;
+            margin-bottom: 12px;
+            font-size: 26px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 12px solid transparent;
+            word-break: break-word;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .record-item.income {
+            border-left-color: #27ae60;
+        }
+        .record-item.expense {
+            border-left-color: #e67e22;
+        }
+        .record-desc {
+            flex: 2;
+            font-size: 24px;
+            color: #2c3e50;
+            margin-right: 10px;
+            display: flex;
+            flex-direction: column;
+        }
+        .record-category {
+            font-size: 20px;
+            color: #7f8c8d;
+            margin-top: 4px;
+        }
+        .record-amount {
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .income .record-amount {
+            color: #27ae60;
+        }
+        .expense .record-amount {
+            color: #e67e22;
+        }
+        .delete-btn {
+            background: none;
+            border: none;
+            font-size: 30px;
+            margin-left: 15px;
+            cursor: pointer;
+            color: #95a5a6;
+            padding: 0 10px;
+            transition: 0.1s;
+            touch-action: manipulation;
+        }
+        .delete-btn:hover {
+            color: #e74c3c;
+        }
+        .footer-note {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 24px;
+            color: #7f8c8d;
+        }
+        .row-2col {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 28px;
+        }
+        .row-2col > div {
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>👵 妈妈记账</h1>
+
+    <!-- 余额显示 -->
+    <div class="balance-box">
+        <div class="balance-label">当前余额</div>
+        <div class="balance-amount" id="balanceDisplay">0.00</div>
+    </div>
+
+    <!-- 金额输入 -->
+    <div class="input-group">
+        <label>💰 金额 (元)</label>
+        <input type="number" id="amountInput" placeholder="例如 99.5" step="0.01" min="0" value="">
+    </div>
+
+    <!-- 分类选择：大类 + 小类 并排 -->
+    <div class="row-2col">
+        <div>
+            <label>📂 大类</label>
+            <select id="mainCategory">
+                <option value="车">车</option>
+                <option value="生活开支" selected>生活开支</option>
+                <option value="医药">医药</option>
+                <option value="其他">其他</option>
+            </select>
+        </div>
+        <div>
+            <label>📁 小类</label>
+            <select id="subCategory"></select>
+        </div>
+    </div>
+
+    <!-- 备注（可选） -->
+    <div class="input-group">
+        <label>📝 备注 (可不填)</label>
+        <textarea id="descInput" placeholder="比如买什么菜..."></textarea>
+    </div>
+
+    <!-- 两个大按钮 -->
+    <div class="button-row">
+        <button class="btn income" id="incomeBtn">➕ 收入</button>
+        <button class="btn expense" id="expenseBtn">➖ 支出</button>
+    </div>
+
+    <!-- 历史记录标题 -->
+    <div class="history-title">📋 最近记录</div>
+    <ul class="record-list" id="recordList"></ul>
+    <div class="footer-note">—— 数据自动保存在手机里 ——</div>
+</div>
+
+<script>
+    (function() {
+        // ---------- 分类数据 ----------
+        const categoryData = {
+            '车': ['油钱', '保险', '维修', '罚款'],
+            '生活开支': ['餐饮', '厨房用品', '蔬菜', '调味品', '油', '盐', '米面', '豆类', '燃气费', '水电费', '衣服'],
+            '医药': ['药品', '住院费'],
+            '其他': ['其他']
+        };
+
+        // 读取本地存储的数据，如果没有就空数组
+        let transactions = loadFromStorage();
+
+        // 获取页面元素
+        const balanceEl = document.getElementById('balanceDisplay');
+        const amountInput = document.getElementById('amountInput');
+        const descInput = document.getElementById('descInput');
+        const mainCategorySelect = document.getElementById('mainCategory');
+        const subCategorySelect = document.getElementById('subCategory');
+        const recordListEl = document.getElementById('recordList');
+        const incomeBtn = document.getElementById('incomeBtn');
+        const expenseBtn = document.getElementById('expenseBtn');
+
+        // 初始化小类下拉框
+        function updateSubCategory(mainCat) {
+            const subs = categoryData[mainCat] || ['其他'];
+            subCategorySelect.innerHTML = ''; // 清空
+            subs.forEach(sub => {
+                const option = document.createElement('option');
+                option.value = sub;
+                option.textContent = sub;
+                subCategorySelect.appendChild(option);
+            });
+        }
+        // 监听大类变化
+        mainCategorySelect.addEventListener('change', function() {
+            updateSubCategory(this.value);
+        });
+        // 初始化小类（默认大类是“生活开支”）
+        updateSubCategory('生活开支');
+
+        // 收入/支出按钮点击
+        incomeBtn.addEventListener('click', function() {
+            addTransaction('income');
+        });
+        expenseBtn.addEventListener('click', function() {
+            addTransaction('expense');
+        });
+
+        // 添加交易
+        function addTransaction(type) {
+            // 获取金额
+            let amount = parseFloat(amountInput.value);
+            if (isNaN(amount) || amount < 0) {
+                alert('请输入正确的金额（大于等于0的数字）');
+                amountInput.focus();
+                return;
+            }
+            const signedAmount = type === 'income' ? amount : -amount;
+
+            // 获取分类
+            const mainCat = mainCategorySelect.value;
+            const subCat = subCategorySelect.value;
+
+            // 获取备注，如果没有备注则用分类组合作为默认备注
+            let description = descInput.value.trim();
+            if (description === '') {
+                description = `${mainCat} · ${subCat}`;
+            }
+
+            // 创建记录对象
+            const transaction = {
+                id: Date.now() + Math.random().toString(36).substr(2, 5),
+                amount: signedAmount,
+                description: description,
+                category: mainCat,
+                subcategory: subCat,
+                type: type,
+                timestamp: new Date().toLocaleString()
+            };
+
+            transactions.unshift(transaction);
+            saveToStorage();
+            render();
+
+            // 清空金额，保留分类和备注（可自行决定是否清空备注）
+            amountInput.value = '';
+            // 备注可以不清，方便连续记同类账
+            // descInput.value = '';
+        }
+
+        // 删除单条记录
+        function deleteTransaction(id) {
+            transactions = transactions.filter(t => t.id !== id);
+            saveToStorage();
+            render();
+        }
+
+        // 计算余额
+        function calculateBalance() {
+            return transactions.reduce((sum, t) => sum + t.amount, 0);
+        }
+
+        // 渲染界面
+        function render() {
+            balanceEl.textContent = calculateBalance().toFixed(2);
+
+            recordListEl.innerHTML = '';
+
+            if (transactions.length === 0) {
+                const emptyMsg = document.createElement('li');
+                emptyMsg.style.textAlign = 'center';
+                emptyMsg.style.padding = '30px 20px';
+                emptyMsg.style.fontSize = '28px';
+                emptyMsg.style.color = '#95a5a6';
+                emptyMsg.style.border = 'none';
+                emptyMsg.textContent = '✨ 点击上方按钮记账吧';
+                recordListEl.appendChild(emptyMsg);
+                return;
+            }
+
+            transactions.forEach(t => {
+                const li = document.createElement('li');
+                li.className = `record-item ${t.type}`;
+
+                // 左侧：描述 + 分类标签
+                const descSpan = document.createElement('span');
+                descSpan.className = 'record-desc';
+                descSpan.innerHTML = `
+                    <span>${t.description}</span>
+                    <span class="record-category">${t.category || '其他'} · ${t.subcategory || '其他'}</span>
+                `;
+
+                // 金额
+                const amountSpan = document.createElement('span');
+                amountSpan.className = 'record-amount';
+                const absAmount = Math.abs(t.amount).toFixed(2);
+                amountSpan.textContent = (t.type === 'income' ? '+' : '-') + absAmount;
+
+                // 删除按钮
+                const delBtn = document.createElement('button');
+                delBtn.className = 'delete-btn';
+                delBtn.innerHTML = '🗑️';
+                delBtn.setAttribute('aria-label', '删除');
+                delBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    if (confirm('确定删除这条记录吗？')) {
+                        deleteTransaction(t.id);
+                    }
+                });
+
+                li.appendChild(descSpan);
+                li.appendChild(amountSpan);
+                li.appendChild(delBtn);
+                recordListEl.appendChild(li);
+            });
+        }
+
+        // 保存到 localStorage
+        function saveToStorage() {
+            try {
+                localStorage.setItem('mom_ledger', JSON.stringify(transactions));
+            } catch (e) {
+                console.warn('保存失败', e);
+            }
+        }
+
+        // 从 localStorage 加载，并兼容旧数据（补充分类字段）
+        function loadFromStorage() {
+            try {
+                const data = localStorage.getItem('mom_ledger');
+                if (data) {
+                    let trans = JSON.parse(data);
+                    // 兼容旧版本：如果缺少category或subcategory，补上默认值
+                    trans = trans.map(t => {
+                        if (!t.category) t.category = '其他';
+                        if (!t.subcategory) t.subcategory = '其他';
+                        return t;
+                    });
+                    return trans;
+                }
+            } catch (e) {
+                console.warn('读取失败', e);
+            }
+            return [];
+        }
+
+        // 初始化显示
+        render();
+    })();
+</script>
+</body>
+</html>
